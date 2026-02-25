@@ -40,7 +40,7 @@ class PortScan:
         return s[2][4][0]
 
 
-    def scanning(self, addr):
+    def scanning(self, addr, all_port_scan):
         global ports, semaphor, isOpen
         isOpen = []
 
@@ -50,10 +50,17 @@ class PortScan:
         semaphor = threading.Semaphore(50)
 
         threads = []
-        for porta in ports:
-            t = threading.Thread(target=self.synScan, args=(addr,porta,))
-            t.start()
-            threads.append(t)
+        if all_port_scan: # Scan all 65536 ports
+            for port in range(1, 65536):
+                t = threading.Thread(target=self.synScan, args=(addr,port,))
+                t.start()
+                threads.append(t)
+
+        else: # Scan Only 1k ports
+            for port in ports:
+                t = threading.Thread(target=self.synScan, args=(addr,port,))
+                t.start()
+                threads.append(t)
 
         for t in threads:
             t.join()

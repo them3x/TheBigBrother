@@ -1,7 +1,7 @@
 from fastapi import FastAPI, BackgroundTasks, Response, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import uuid4
 import os
 import sys
@@ -30,8 +30,15 @@ class FootprintRequest(BaseModel):
     query: str
     type: str # "email" or "phone"
 
+class NetworkOptions(BaseModel):
+    full_ports: bool = False
+    scan_all_hosts: bool = False
+
 class NetworkRequest(BaseModel):
     domain: str
+    options: NetworkOptions = Field(default_factory=NetworkOptions)
+    wordlist: List[str] = Field(default_factory=list)
+
 
 class DarkRequest(BaseModel):
     query: str
@@ -261,7 +268,10 @@ async def footprint_scan(request: FootprintRequest):
 
 @app.post("/api/network/scan")
 async def network_scan(request: NetworkRequest):
-    data = await scan_target(request.domain)
+    all_port_scan = request.options.full_ports
+    scan_all_hosts = request.options.scan_all_hosts
+
+    data = await scan_target(request.domain, all_port_scan, scan_all_hosts, request.wordlist)
     # Generate map HTML
     if "error" not in data:
          graph_html = generate_network_map(data)

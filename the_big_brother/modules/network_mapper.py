@@ -9,18 +9,8 @@ from the_big_brother.modules import port_scan
 
 # Subdomain Brute force
 def subd_discover(domain, wlist):
-    def dns_ipv4(mounted_domain):
-        try:
-            data = socket.getaddrinfo(mounted_domain, None, socket.AF_INET)
-            addr = data[2][4][0]
-            return addr
-        except socket.gaierror:
-            return 0
-
-    checked = []
-    subdomains = {}
-    with open(wlist) as wordlist:
-        for line in wordlist.readlines():
+    def brutefoce(list, subdomains):
+        for line in list:
             try:
                 line = line.replace("\n", "")
                 mounted_domain = f"{line}.{domain}"
@@ -34,6 +24,27 @@ def subd_discover(domain, wlist):
                     checked.append(mounted_domain)
             except KeyboardInterrupt:
                 exit(0)
+
+        return subdomains
+
+    def dns_ipv4(mounted_domain):
+        try:
+            data = socket.getaddrinfo(mounted_domain, None, socket.AF_INET)
+            addr = data[2][4][0]
+            return addr
+        except socket.gaierror:
+            return 0
+
+    checked = []
+    subdomains = {}
+
+    if isinstance(wlist, list): # Use custom wordlist
+        subdomains = brutefoce(wlist, subdomains)
+
+    else: # Use default wordlist
+        with open(wlist) as wordlist:
+            subdomains = brutefoce(wordlist.readlines(), subdomains)
+
     return subdomains
 
 async def check_port(ip, port):
@@ -97,7 +108,7 @@ def get_dns_records(domain):
         print(f"DNS Error: {e}")
     return records
 
-async def scan_target(domain: str):
+async def scan_target(domain: str, all_port_scan: bool, all_host_scan: bool, wordlist_custom: list):
     """
     Scans a target for IP, open ports, subdomains, GeoIP, Whois, and DNS.
     """
@@ -139,14 +150,28 @@ async def scan_target(domain: str):
         sudomains[results["ip"]] = [domain]
 
     # 5. PortScan
-    p = port_scan.PortScan()
     ipv4 = {}
+    p = port_scan.PortScan()
+
+    if wordlist_custom != []:
+        # Switch default wordlist by custom
+        wordlist = wordlist_custom
+
     for ip in subd_discover(domain, wordlist):
-        port_results = await asyncio.to_thread(p.scanning, ip)
+
+        # Scan all host or Main host only
+        if all_host_scan:
+            port_results = p.scanning(ip, all_port_scan)
+
+        else:
+            port_results = {}
+            if ip == results["ip"]:
+                port_results = p.scanning(ip, all_port_scan)
+
+
         ipv4[ip] = {"portScan":port_results, "domains": sudomains[ip]}
 
     results["subdomains"] = ipv4
-
     return results
 
 def generate_network_map(data):

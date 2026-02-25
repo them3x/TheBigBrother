@@ -1,15 +1,71 @@
-            <div class="hud-panel">
-                <div class="search-area">
-                    <input type="text" id="network-input" placeholder="ENTER DOMAIN (e.g. example.com)">
-                    <button onclick="scanNetwork()" class="glitch-btn">MAP NETWORK</button>
-                </div>
-                <div id="network-status" class="status" style="color: #fff;">READY TO SCAN.</div>
-            </div>
+<div class="hud-panel">
+  <div class="search-area" style="display:flex; gap:10px; align-items:center;">
+    <button type="button" class="glitch-btn" onclick="document.getElementById('netAdv').showModal()">
+      ADVANCED
+    </button>
 
-            <div id="network-results" class="results" style="display: block; min-height: 500px;">
-                <!-- Graph will appear here -->
-                <div id="network-graph"
-                    style="width: 100%; height: 500px; border: 1px solid var(--accent-color); background: #000;"></div>
-                <div id="network-ports" style="margin-top: 20px; color: var(--text-color);"></div>
-            </div>
-            <script src="/js/netscan.js"></script>
+    <input type="text" id="network-input" placeholder="ENTER DOMAIN (e.g. example.com)" style="flex:1;">
+
+    <button type="button" onclick="scanNetwork()" class="glitch-btn">MAP NETWORK</button>
+  </div>
+
+  <div id="network-status" class="status" style="color:#fff;">READY TO SCAN.</div>
+</div>
+
+<div id="network-results" class="results" style="display:block; min-height:500px;">
+  <div id="network-graph"
+       style="width:100%; height:500px; border:1px solid var(--accent-color); background:#000;"></div>
+  <div id="network-ports" style="margin-top:20px; color:var(--text-color);"></div>
+</div>
+
+<dialog id="netAdv" style="border:1px solid var(--accent-color); background:#0b0b0b; color:var(--text-color); border-radius:10px; padding:16px; width:min(560px, 92vw);">
+  <form method="dialog" style="margin:0;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+      <h3 style="margin:0; color:var(--accent-color);">ADVANCED OPTIONS</h3>
+      <button class="glitch-btn" value="cancel" type="submit" style="padding:6px 10px;">X</button>
+    </div>
+
+    <div class="adv-options" style="margin-top:12px; display:grid; gap:10px;">
+      <label class="adv-row" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="opt-full-ports">
+        <span>SCAN 65535 Ports</span>
+      </label>
+
+      <label class="adv-row" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="opt-scan-all-hosts">
+        <span>Portscan on ALL hosts found</span>
+      </label>
+
+      <div style="margin-top:6px; border-top:1px dashed #222; padding-top:10px;">
+        <div style="color:var(--accent-color); font-weight:700; margin-bottom:6px;">
+          SUBDOMAIN WORDLIST (custom)
+        </div>
+
+        <input
+          type="file"
+          id="opt-wordlist-file"
+          accept=".txt,text/plain"
+          style="width:100%;"
+        >
+
+        <div style="margin-top:6px; display:flex; justify-content:space-between; gap:10px; font-size:0.9em; color:#aaa;">
+          <span id="wordlist-info">no file loaded</span>
+          <button type="button" class="glitch-btn" onclick="clearWordlist()" style="padding:6px 10px;">CLEAR</button>
+        </div>
+
+        <textarea
+          id="opt-wordlist-preview"
+          readonly
+          placeholder="Preview..."
+          style="margin-top:8px; width:100%; height:120px; background:#070707; color:#bbb; border:1px solid #222; border-radius:8px; padding:10px; resize:vertical;"
+        ></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; display:flex; justify-content:flex-end; gap:10px;">
+      <button class="glitch-btn" value="ok" type="submit">CLOSE</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="/js/netscan.js"></script>
