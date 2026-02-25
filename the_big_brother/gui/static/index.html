@@ -1427,11 +1427,18 @@
                 document.getElementById('footprint-status').innerText = "ERROR EXECUTING TRACE.";
             }
         }
+
         async function scanNetwork() {
+            // Add loading gif
             const domain = document.getElementById('network-input').value.trim();
             if (!domain) return;
+            const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+            let i = 0;
 
-            document.getElementById('network-status').innerText = "MAPPING TOPOLOGY...";
+            const spinner = setInterval(() => {
+                document.getElementById('network-status').innerText = `${frames[i++ % frames.length]} SCANNING...`;
+            }, 80);
+
             document.getElementById('network-graph').innerHTML = '<div style="text-align:center; padding:100px;">ESTABLISHING CONNECTIONS...</div>';
             document.getElementById('network-ports').innerHTML = ''; // Clear previous
 
@@ -1457,19 +1464,34 @@
                 // Render Ports & Intel
                 let intelHtml = `<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">`;
 
-                // Column 1: Ports
+
+                // Show ALL IPs/Ports
                 intelHtml += `<div class="result-card" style="border-color:var(--accent-color);">
-                    <h3 style="color:var(--accent-color); border-bottom:1px solid var(--accent-color)">OPEN PORTS</h3>
-                    <div style="margin-top:10px;">`;
-                if (data.ports.length > 0) {
-                    data.ports.forEach(p => {
-                        intelHtml += `<div style="margin-bottom:5px; padding:5px; background:rgba(0,255,65,0.1); border-left:2px solid var(--accent-color);">
-                            <span style="color:var(--accent-color); font-weight:bold;">${p.port}</span> <span style="color:#fff;">${p.service}</span>
-                        </div>`;
+                <h3 style="color:var(--accent-color); border-bottom:1px solid var(--accent-color)">IPs & PORTS</h3>
+                <div style="margin-top:10px;">`;
+
+                if (data.subdomains && Object.keys(data.subdomains).length > 0) {
+                    Object.entries(data.subdomains).forEach(([ip, info]) => {
+                        intelHtml += `<div style="margin-bottom:10px;">
+                            <div style="color:#ffcc00; font-weight:bold; margin-bottom:4px;">⬡ ${ip}</div>`;
+        
+                            if (info.portScan && info.portScan.length > 0) {
+                            info.portScan.forEach(p => {
+                                intelHtml += `<div style="margin-left:12px; margin-bottom:3px; padding:4px 8px; background:rgba(0,255,65,0.1); border-left:2px solid var(--accent-color);">
+                                    <span style="color:var(--accent-color); font-weight:bold;">${p.port}</span> 
+                                    <span style="color:#aaa;">${p.service}</span>
+                                </div>`;
+                            });
+                        } else {
+                            intelHtml += `<div style="margin-left:12px; color:#444; font-size:0.85em;">no open ports</div>`;
+                        }
+        
+                        intelHtml += `</div>`;
                     });
                 } else {
-                    intelHtml += `<div style="color:#666;">NO OPEN PORTS DETECTED</div>`;
+                    intelHtml += `<div style="color:#666;">NO IPs DETECTED</div>`;
                 }
+
                 intelHtml += "</div></div>";
 
                 // Column 2: Geo / Whois
@@ -1720,7 +1742,7 @@
             }
 
             const html = `
-                 <div class="result-card" style="border-color: var(--accent-color); width:100%;">
+                 <div class="result-card" style="border-color: var(--accent-color); width: 90vw;">
                     <div class="result-header">
                         <span class="site-name" style="color:var(--accent-color);">IMAGE METADATA</span>
                         <span class="status-badge" style="border-color:var(--accent-color); color:var(--accent-color);">EXIF</span>

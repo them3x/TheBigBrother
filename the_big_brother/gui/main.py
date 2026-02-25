@@ -287,45 +287,8 @@ async def tool_exif(request: ExifRequest):
 # FILE UPLOAD for EXIF
 @app.post("/api/tools/exif/upload")
 async def tool_exif_upload(file: UploadFile = File(...)):
-    # Read bytes
     content = await file.read()
-    # Modify get_exif_data to accept bytes. 
-    # Since we can't easily modify the module function signature without breaking it elsewhere or refactoring,
-    # let's duplicate the logic here or update the module.
-    # Actually, let's update the module logic in-place via a helper if possible.
-    # But for now, let's pass a byte stream if the module supports it or just use PIL directly here.
-    
-    from PIL import Image
-    from PIL.ExifTags import TAGS, GPSTAGS
-    from io import BytesIO
-    
-    results = {"source": file.filename, "basic": {}, "gps": {}, "error": None}
-    try:
-        image = Image.open(BytesIO(content))
-        results["basic"]["format"] = image.format
-        results["basic"]["mode"] = image.mode
-        results["basic"]["size"] = f"{image.width}x{image.height}"
-        
-        exif_data = image._getexif()
-        if exif_data:
-            for tag_id, value in exif_data.items():
-                tag = TAGS.get(tag_id, tag_id)
-                if isinstance(value, bytes):
-                    try: value = value.decode()
-                    except: value = str(value)
-
-                if tag == "GPSInfo":
-                    gps_data = {}
-                    for t in value:
-                        sub_tag = GPSTAGS.get(t, t)
-                        gps_data[sub_tag] = str(value[t])
-                    results["gps"] = gps_data
-                else:
-                    if len(str(value)) < 500:
-                        results["basic"][tag] = value
-    except Exception as e:
-        results["error"] = str(e)
-    return results
+    return get_exif_data(content, is_url=False, filename=file.filename)
 
 @app.post("/api/tools/dork")
 async def tool_dork(request: DorkRequest):
@@ -344,3 +307,4 @@ async def tool_flight(request: FlightRequest):
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_dir):
     app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+

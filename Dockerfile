@@ -6,6 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install exiftool
+RUN apt update && apt install -y libimage-exiftool-perl
+
 # Copy application code
 COPY . .
 
