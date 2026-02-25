@@ -1,0 +1,47 @@
+            <div id="images-container" class="images-container"></div>
+
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="username" placeholder="ENTER TARGET IDENTIFIER..."
+                        onkeydown="if(event.key==='Enter') startScan()">
+                    <button onclick="startScan()" id="btn-scan" class="glitch-btn">INITIATE</button>
+                </div>
+
+                <div class="controls">
+                    <button id="btn-stop" class="ctrl-btn stop" onclick="stopScan()" disabled>[X] ABORT
+                        SEQUENCE</button>
+                    <button id="btn-download" class="ctrl-btn download" onclick="downloadReport()" disabled>[V] EXPORT
+                        DATA</button>
+
+                    <div class="dork-wrapper">
+                        <select id="dork-select" class="dork-select">
+                            <option value="linkedin">LINKEDIN</option>
+                            <option value="instagram">INSTAGRAM</option>
+                            <option value="twitter">TWITTER</option>
+                            <option value="facebook">FACEBOOK</option>
+                            <option value="tiktok">TIKTOK</option>
+                            <option value="pinterest">PINTEREST</option>
+                            <option value="github">GITHUB</option>
+                            <option value="gitlab">GITLAB</option>
+                            <option value="stackoverflow">STACKOVERFLOW</option>
+                            <option value="pastebin">PASTEBIN</option>
+                            <option value="reddit">REDDIT</option>
+                            <option value="pdf">FILETYPE: PDF</option>
+                            <option value="doc">FILETYPE: DOC</option>
+                            <option value="txt">FILETYPE: TXT</option>
+                            <option value="intext">INTEXT SCAN</option>
+                            <option value="intitle">INTITLE SCAN</option>
+                            <option value="inurl">INURL SCAN</option>
+                            <option value="password">BREACH CHECK</option>
+                            <option value="email">EMAIL CHECK</option>
+                            <option value="phone">PHONE CHECK</option>
+                        </select>
+                        <button class="dork-btn" onclick="executeDork()">DEPLOY DORK ></button>
+                    </div>
+                </div>
+
+                <div id="status" class="status" style="color: #fff;">SYSTEM STANDBY.</div>
+            </div>
+
+            <div id="results" class="results"></div>
+            <script src="/js/profile.js"></script>

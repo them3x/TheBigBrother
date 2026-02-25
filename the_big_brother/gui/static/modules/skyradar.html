@@ -1,0 +1,89 @@
+
+            <div class="hud-panel" style="margin-bottom:10px;">
+                <div class="search-area" style="flex-wrap: wrap; gap:10px;">
+                    <select id="sky-country" class="dork-select" onchange="updateSkyRegion()" style="width:150px;">
+                        <option value="">SELECT REGION...</option>
+                        <option value="uk">UNITED KINGDOM</option>
+                        <option value="usa_east">USA (EAST)</option>
+                        <option value="usa_west">USA (WEST)</option>
+                        <option value="france">FRANCE</option>
+                        <option value="germany">GERMANY</option>
+                        <option value="russia">RUSSIA (MOSCOW)</option>
+                        <option value="china">CHINA (EAST)</option>
+                        <option value="japan">JAPAN</option>
+                        <option value="dubai">UAE (DUBAI)</option>
+                    </select>
+                    <input type="text" id="sky-lat" placeholder="LAT" style="width:100px;">
+                    <input type="text" id="sky-lon" placeholder="LON" style="width:100px;">
+                    <input type="text" id="sky-rad" value="100" placeholder="RAD (KM)" style="width:80px;">
+                    <button onclick="scanSky()" class="glitch-btn" style="border-color: #0099ff; color: #0099ff;">RADAR
+                        SCAN</button>
+                    <!-- Auto-locate button -->
+                    <button
+                        onclick="if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=>{document.getElementById('sky-lat').value=p.coords.latitude; document.getElementById('sky-lon').value=p.coords.longitude;})"
+                        class="glitch-btn"
+                        style="border-color: #0099ff; color: #0099ff; font-size:0.8rem; padding:0 10px;">📍 MY
+                        LOC</button>
+                </div>
+                <div id="sky-status" class="status" style="color: #0099ff;">OPENSKY NETWORK LINKED.</div>
+
+            <!-- Dashboard Layout -->
+            <div style="display: flex; gap: 15px; height: 100%;">
+                <!-- Map Container (Left, 70%) -->
+                <div id="sky-map"
+                    style="flex: 3; height: 100%; min-height: 500px; background:#111; border:1px solid #0099ff;"></div>
+
+                <!-- Live Feed (Right, 30%) -->
+                <div
+                    style="flex: 1; height: 100%; min-height: 500px; overflow-y: auto; border: 1px solid #0099ff; background: rgba(0, 20, 40, 0.8); padding: 10px;">
+                    <h3
+                        style="color:#0099ff; text-align:center; border-bottom:1px solid #0099ff; padding-bottom:10px; margin-top:0;">
+                        LIVE TRAFFIC</h3>
+                    <div id="sky-results" class="results" style="display:block; grid-template-columns: 1fr;">
+                        <div style="text-align:center; opacity:0.7;">NO DATA FEED</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Search Modal -->
+        <div id="deepModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeDeepModal()">&times;</span>
+                <h2>DEEP VISUAL INTEL</h2>
+
+                <div class="target-analysis">
+                    <div class="target-wrapper">
+                        <div class="target-scan"></div>
+                        <div class="target-reticle"></div>
+                        <img id="deep-target-img" src="" style="width:100%; height:100%;">
+                    </div>
+                    <div
+                        style="color:var(--accent-color); font-size:0.8rem; margin-top:5px; animation:blink 1s infinite">
+                        SCANNING TARGET...</div>
+                </div>
+
+                <div id="deep-status" class="status-bar" style="margin-bottom: 20px;">READY</div>
+                <div class="deep-grid">
+                    <div class="engine-col">
+                        <div class="engine-title">GOOGLE IMAGES</div>
+                        <div id="google-results"></div>
+                    </div>
+                    <div class="engine-col">
+                        <div class="engine-title">BING VISUAL</div>
+                        <div id="bing-results"></div>
+                    </div>
+                    <div class="engine-col">
+                        <div class="engine-title">YANDEX VISION</div>
+                        <div id="yandex-results"></div>
+                    </div>
+                    <div class="engine-col">
+                        <div class="engine-title">TINEYE TRACKER</div>
+                        <div id="tineye-results"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/flyradar.js"></script>

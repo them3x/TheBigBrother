@@ -1,0 +1,15 @@
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="crypto-input" placeholder="ENTER WALLET ADDRESS">
+                    <select id="crypto-type" class="dork-select" style="width:120px; margin-left:10px;">
+                        <option value="btc">BITCOIN</option>
+                        <option value="eth">ETHEREUM</option>
+                    </select>
+                    <button onclick="scanCrypto()" class="glitch-btn"
+                        style="border-color: #ffd700; color: #ffd700;">ANALYZE</button>
+                </div>
+                <div id="crypto-status" class="status" style="color: #ffd700;">BLOCKCHAIN LEDGER CONNECTION ESTABLISHED.
+                </div>
+            </div>
+            <div id="crypto-results" class="results"></div>
+    <script src="/js/crypto.js"></script>

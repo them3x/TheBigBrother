@@ -1,0 +1,110 @@
+        async function scanNetwork() {
+            // Add loading gif
+            const domain = document.getElementById('network-input').value.trim();
+            if (!domain) return;
+            const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+            let i = 0;
+
+            const spinner = setInterval(() => {
+                document.getElementById('network-status').innerText = `${frames[i++ % frames.length]} SCANNING...`;
+            }, 80);
+
+            document.getElementById('network-graph').innerHTML = '<div style="text-align:center; padding:100px;">ESTABLISHING CONNECTIONS...</div>';
+            document.getElementById('network-ports').innerHTML = ''; // Clear previous
+
+            try {
+                const res = await fetch('/api/network/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ domain })
+                });
+
+                const data = await res.json();
+
+                if (data.error) {
+                    document.getElementById('network-status').innerText = "ERROR: " + data.error;
+                    return;
+                }
+
+                if (data.map_html) {
+                    const blob = new Blob([data.map_html], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('network-graph').innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+                }
+
+                // Render Ports & Intel
+                let intelHtml = `<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">`;
+
+                // Stop loading animation
+                clearInterval(spinner);
+
+                // Show ALL IPs/Ports
+                intelHtml += `<div class="result-card" style="border-color:var(--accent-color);">
+                <h3 style="color:var(--accent-color); border-bottom:1px solid var(--accent-color)">IPs & PORTS</h3>
+                <div style="margin-top:10px;">`;
+
+                if (data.subdomains && Object.keys(data.subdomains).length > 0) {
+                    Object.entries(data.subdomains).forEach(([ip, info]) => {
+                        intelHtml += `<div style="margin-bottom:10px;">
+                            <div style="color:#ffcc00; font-weight:bold; margin-bottom:4px;">⬡ ${ip}</div>`;
+        
+                            if (info.portScan && info.portScan.length > 0) {
+                            info.portScan.forEach(p => {
+                                intelHtml += `<div style="margin-left:12px; margin-bottom:3px; padding:4px 8px; background:rgba(0,255,65,0.1); border-left:2px solid var(--accent-color);">
+                                    <span style="color:var(--accent-color); font-weight:bold;">${p.port}</span> 
+                                    <span style="color:#aaa;">${p.service}</span>
+                                </div>`;
+                            });
+                        } else {
+                            intelHtml += `<div style="margin-left:12px; color:#444; font-size:0.85em;">no open ports</div>`;
+                        }
+        
+                        intelHtml += `</div>`;
+                    });
+                } else {
+                    intelHtml += `<div style="color:#666;">NO IPs DETECTED</div>`;
+                }
+
+                intelHtml += "</div></div>";
+
+                // Column 2: Geo / Whois
+                intelHtml += `<div class="result-card" style="border-color:var(--accent-color);">
+                    <h3 style="color:var(--accent-color); border-bottom:1px solid var(--accent-color)">GEO / WHOIS</h3>
+                    <div style="font-size:0.9rem; margin-top:10px;">`;
+                if (data.geoip && data.geoip.country) {
+                    intelHtml += `<div style="margin-bottom:5px;"><strong>LOC:</strong> ${data.geoip.country} (${data.geoip.countryCode})</div>`;
+                    intelHtml += `<div style="margin-bottom:5px;"><strong>ISP:</strong> ${data.geoip.isp}</div>`;
+                    intelHtml += `<div style="margin-bottom:5px;"><strong>ORG:</strong> ${data.geoip.org}</div>`;
+                } else {
+                    intelHtml += `<div>[GEO DATA UNAVAILABLE]</div>`;
+                }
+                intelHtml += `<div style="margin:10px 0; border-top:1px dashed #333;"></div>`;
+                if (data.whois && data.whois.registrar) {
+                    intelHtml += `<div style="margin-bottom:5px;"><strong>REG:</strong> ${data.whois.registrar}</div>`;
+                    intelHtml += `<div style="margin-bottom:5px;"><strong>DATE:</strong> ${data.whois.creation_date}</div>`;
+                } else {
+                    intelHtml += `<div>[WHOIS REDACTED/UNAVAILABLE]</div>`;
+                }
+                intelHtml += "</div></div>";
+
+                // Column 3: DNS
+                intelHtml += `<div class="result-card" style="border-color:var(--accent-color);">
+                    <h3 style="color:var(--accent-color); border-bottom:1px solid var(--accent-color)">DNS RECORDS</h3>
+                    <div style="font-size:0.9rem; margin-top:10px;">`;
+                if (data.dns) {
+                    if (data.dns.MX && data.dns.MX.length) intelHtml += `<div style="margin-bottom:5px;"><span style="color:#888;">MX:</span> ${data.dns.MX[0]}</div>`;
+                    if (data.dns.NS && data.dns.NS.length) intelHtml += `<div style="margin-bottom:5px;"><span style="color:#888;">NS:</span> ${data.dns.NS[0]}</div>`;
+                    if (data.dns.A && data.dns.A.length) intelHtml += `<div style="margin-bottom:5px;"><span style="color:#888;">A:</span> ${data.dns.A.join(', ')}</div>`;
+                    if (data.dns.TXT && data.dns.TXT.length) intelHtml += `<div style="margin-bottom:5px;"><span style="color:#888;">TXT:</span> ${data.dns.TXT.length} RECORDS</div>`;
+                }
+                intelHtml += "</div></div></div>";
+
+                document.getElementById('network-ports').innerHTML = intelHtml;
+                document.getElementById('network-status').innerText = "SCAN COMPLETE.";
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('network-status').innerText = "NETWORK ERROR.";
+            }
+        }
+

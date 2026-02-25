@@ -1,0 +1,16 @@
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="footprint-input" placeholder="ENTER EMAIL OR PHONE (e.g. +1415...)">
+                    <button onclick="scanFootprint()" class="glitch-btn">TRACK</button>
+                    <select id="footprint-type" class="dork-select" style="width:100px; margin-left:10px;">
+                        <option value="email">EMAIL</option>
+                        <option value="phone">PHONE</option>
+                    </select>
+                </div>
+                <div id="footprint-status" class="status" style="color: #fff;">READY TO TRACK.</div>
+            </div>
+
+            <div id="footprint-results" class="results" style="display: block;">
+                <!-- Results will appear here as list/cards -->
+            </div>
+            <script src="/js/email-search.js"></script>

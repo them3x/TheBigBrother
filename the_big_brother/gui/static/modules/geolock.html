@@ -1,0 +1,11 @@
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="geo-lat" placeholder="LATITUDE (e.g. 40.7128)">
+                    <input type="text" id="geo-lon" placeholder="LONGITUDE (e.g. -74.0060)">
+                    <button onclick="runGeoint()" class="glitch-btn" style="border-color: #00ff00; color: #00ff00;">SAT
+                        RECON</button>
+                </div>
+                <div id="geo-status" class="status" style="color: #00ff00;">SATELLITE UPLINK STANDBY.</div>
+            </div>
+            <div id="geo-results" class="results"></div>
+            <script src="/js/geo-ip.js"></script>

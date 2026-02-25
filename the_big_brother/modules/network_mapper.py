@@ -77,22 +77,22 @@ def get_dns_records(domain):
         resolver = dns.resolver.Resolver()
         resolver.timeout = 2
         resolver.lifetime = 2
-        
+
         try:
             for r in resolver.resolve(domain, 'MX'):
                 records["MX"].append(str(r.exchange))
         except: pass
-        
+
         try:
             for r in resolver.resolve(domain, 'NS'):
                 records["NS"].append(str(r.target))
         except: pass
-        
+
         try:
             for r in resolver.resolve(domain, 'TXT'):
                 records["TXT"].append(str(r))
         except: pass
-        
+
     except Exception as e:
         print(f"DNS Error: {e}")
     return records
@@ -110,17 +110,17 @@ async def scan_target(domain: str):
         "whois": {},
         "dns": {}
     }
-    
+
     # Resolve IP
     try:
         results["ip"] = socket.gethostbyname(domain)
     except:
         return {"error": "Could not resolve domain"}
-        
+
     # Parallel Tasks
     # 1. GeoIP (Sync but fast enough, or thread it)
     results["geoip"] = await asyncio.to_thread(get_geoip, results["ip"])
-    
+
     # 2. Whois
     results["whois"] = await asyncio.to_thread(get_rdap_whois, domain)
 

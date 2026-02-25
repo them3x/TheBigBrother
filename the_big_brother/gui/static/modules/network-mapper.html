@@ -1,0 +1,15 @@
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="network-input" placeholder="ENTER DOMAIN (e.g. example.com)">
+                    <button onclick="scanNetwork()" class="glitch-btn">MAP NETWORK</button>
+                </div>
+                <div id="network-status" class="status" style="color: #fff;">READY TO SCAN.</div>
+            </div>
+
+            <div id="network-results" class="results" style="display: block; min-height: 500px;">
+                <!-- Graph will appear here -->
+                <div id="network-graph"
+                    style="width: 100%; height: 500px; border: 1px solid var(--accent-color); background: #000;"></div>
+                <div id="network-ports" style="margin-top: 20px; color: var(--text-color);"></div>
+            </div>
+            <script src="/js/netscan.js"></script>

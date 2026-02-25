@@ -1,0 +1,19 @@
+            <div class="hud-panel">
+                <div class="search-area">
+                    <input type="text" id="exif-input" placeholder="ENTER IMAGE URL (http://...)">
+                    <span style="color:#666; margin:0 10px;">OR</span>
+                    <input type="file" id="exif-file"
+                        style="width:200px; color:var(--accent-color); border:1px solid var(--accent-color);">
+                </div>
+                <div style="margin-top:10px; text-align:right;">
+                    <button onclick="analyzeExif()" class="glitch-btn"
+                        style="border-color: var(--accent-color); color: var(--accent-color);">EXTRACT DATA
+                        (URL)</button>
+                    <button onclick="analyzeExifFile()" class="glitch-btn"
+                        style="border-color: var(--accent-color); color: var(--accent-color);">EXTRACT DATA
+                        (FILE)</button>
+                </div>
+                <div id="exif-status" class="status" style="color: var(--accent-color);">WAITING FOR VISUAL DATA.</div>
+            </div>
+            <div id="exif-results" class="results"></div>
+            <script src="/js/exiftool.js"></script>
